@@ -1,6 +1,9 @@
-const pg = require('pg');
-const postgresUrl = 'postgres://localhost/pg-node-rest';
-const client = new pg.Client(postgresUrl);
+const pg = require("pg")
+// connect to the DB
+// get the url or the end point for the DB
+const pgURL = 'postgres://localhost:5432/puppies';
+// we need that client
+const client = new pg.Client(pgURL) // the url or a config object {password: "123"}
 
 const prompt = (data) => {
   process.stdout.write(
@@ -14,40 +17,34 @@ const main = async (data) => {
   switch (command) {
     case '1':
       try {
-        const users = await client.query('SELECT * FROM users;');
-        users.rows.forEach((user) => {
-          console.log(`User name: ${user.name}`);
-        });
-      } catch (err) {
-        console.log('Error when trying to retrieve all users');
-        console.log(err);
+        const {rows} = await client.query('SELECT * FROM users;') // {rows, dog}
+
+        rows.forEach(user => {
+          console.log(user.name + "!")
+        })
+        //console.log("from db: ", data)
+      } catch(err){
+        console.log("ERROR!: ", err)
       }
-      break;
+    break;
     case '2':
-      try {
-        const dogs = await client.query('SELECT * FROM dogs;');
-        dogs.rows.forEach((dog) => {
-          console.log(`Dog name: ${dog.name}`);
-        });
-      } catch (err) {
-        console.log('Error when trying to retrieve all dogs');
-        console.log(err);
-      }
-      break;
+      console.log("You entered the number 2.")
+    break;
     case '3':
       await client.end();
-      process.exit(1);
+      process.exit(1); // This kills the process so no need for a break after this line
     default:
       prompt('not valid command');
   }
   prompt();
 };
 
-function start() {
-  client.connect();
+// IIFE
+(function start() {
   console.log('client has connected!\n');
+  client.connect() // this makes that connection
   prompt();
   process.stdin.on('data', main);
-}
+})()
 
-start();
+// start();

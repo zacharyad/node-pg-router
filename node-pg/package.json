@@ -12,6 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "nodemon": "^2.0.7",
-    "pg": "^8.6.0"
+    "pg": "^8.7.3"
   }
 }
